@@ -1,16 +1,16 @@
 package br.com.zup.proposta.shared.handlers;
 
+import br.com.zup.proposta.shared.exceptions.ApiException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ValidationErrorHandler {
@@ -21,20 +21,23 @@ public class ValidationErrorHandler {
         this.messageSource = messageSource;
     }
 
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<ValidationErrorResponse> handle(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ValidationErrorResponse> handle(MethodArgumentNotValidException exception) {
+        List<String> errors = new ArrayList<>();
+
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        fieldErrors.forEach(fieldError -> {
+            String errorMessage = String.format("Campo %s %s", fieldError.getField(),
+                                                messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()));
+            errors.add(errorMessage);
+        });
 
-        return buildValidationErrorResponse(fieldErrors);
+        return ResponseEntity.badRequest().body(new ValidationErrorResponse(errors));
     }
 
-    private List<ValidationErrorResponse> buildValidationErrorResponse(List<FieldError> fieldErrors) {
-        return fieldErrors.stream().map(error -> new ValidationErrorResponse(error.getField(), getMessage(error))).collect(Collectors.toList());
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ValidationErrorResponse> handle(ApiException exception) {
+        ValidationErrorResponse errors = new ValidationErrorResponse(exception.getReason());
+        return ResponseEntity.status(exception.getHttpStatus()).body(errors);
     }
-
-    private String getMessage(FieldError error) {
-        return messageSource.getMessage(error, LocaleContextHolder.getLocale());
-    }
-
 }

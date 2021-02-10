@@ -32,6 +32,9 @@ public class Proposal {
     @Column(nullable = false)
     private BigDecimal salary;
 
+    @Deprecated
+    public Proposal() { }
+
     public Proposal(@NotBlank String document,
                     @NotBlank @Email String email,
                     @NotBlank String name,

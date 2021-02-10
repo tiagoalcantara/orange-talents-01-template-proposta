@@ -1,19 +1,21 @@
 package br.com.zup.proposta.shared.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ValidationErrorResponse {
-    private String field;
-    private String message;
+    private final List<String> errors;
 
-    public ValidationErrorResponse(String field, String message) {
-        this.field = field;
-        this.message = message;
+    public ValidationErrorResponse(List<String> errors) {
+        this.errors = errors;
     }
 
-    public String getField() {
-        return field;
+    public ValidationErrorResponse(String error) {
+        this.errors = new ArrayList<>();
+        this.errors.add(error);
     }
 
-    public String getMessage() {
-        return message;
+    public List<String> getErrors() {
+        return errors;
     }
 }

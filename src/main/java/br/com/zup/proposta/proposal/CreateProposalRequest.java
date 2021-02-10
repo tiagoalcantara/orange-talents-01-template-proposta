@@ -32,6 +32,10 @@ public class CreateProposalRequest {
         this.salary = salary;
     }
 
+    public String getDocument() {
+        return document;
+    }
+
     public Proposal toProposal() {
         return new Proposal(document, email, name, address, salary);
     }
