@@ -1,6 +1,5 @@
 package br.com.zup.proposta.compartilhado.handlers;
 
-import br.com.zup.proposta.compartilhado.exceptions.ApiException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
