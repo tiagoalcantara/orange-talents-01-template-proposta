@@ -1,4 +1,4 @@
-package br.com.zup.proposta.shared.exceptions;
+package br.com.zup.proposta.compartilhado.exceptions;
 
 import org.springframework.http.HttpStatus;
 
