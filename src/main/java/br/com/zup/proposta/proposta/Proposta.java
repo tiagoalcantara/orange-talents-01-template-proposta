@@ -1,6 +1,8 @@
 package br.com.zup.proposta.proposta;
 
+import br.com.zup.proposta.cartao.Cartao;
 import br.com.zup.proposta.compartilhado.validators.CpfCnpj;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -34,6 +36,9 @@ public class Proposta {
     @Embedded
     private Endereco endereco;
 
+    @OneToOne(mappedBy = "proposta", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Cartao cartao;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -66,5 +71,10 @@ public class Proposta {
 
     public void atualizarStatus(Status resultadoSolicitacao) {
         this.status = resultadoSolicitacao;
+    }
+
+    public void associarCartao(String numero) {
+        Assert.hasLength(numero, "O numero do cartão é obrigatório.");
+        this.cartao = new Cartao(this, numero);
     }
 }
