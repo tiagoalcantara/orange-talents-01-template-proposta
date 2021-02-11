@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +36,9 @@ public class ValidacaoExceptionHandler {
         return ResponseEntity.badRequest().body(new ErroDeValidacaoResponse(erros));
     }
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErroDeValidacaoResponse> handle(ApiException exception) {
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErroDeValidacaoResponse> handle(ResponseStatusException exception) {
         ErroDeValidacaoResponse erros = new ErroDeValidacaoResponse(exception.getReason());
-        return ResponseEntity.status(exception.getHttpStatus()).body(erros);
+        return ResponseEntity.status(exception.getStatus()).body(erros);
     }
 }
