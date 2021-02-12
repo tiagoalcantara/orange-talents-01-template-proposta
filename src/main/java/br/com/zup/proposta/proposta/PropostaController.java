@@ -49,7 +49,7 @@ public class PropostaController {
         proposta.atualizarStatus(statusAvaliado);
         propostaRepository.save(proposta);
 
-        URI uri = uriComponentsBuilder.path("/proposal/{id}")
+        URI uri = uriComponentsBuilder.path("/proposta/{id}")
                                       .buildAndExpand(proposta.getId())
                                       .toUri();
 
