@@ -39,4 +39,32 @@ public class Endereco {
         this.cidade = cidade;
         this.estado = estado;
     }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
 }

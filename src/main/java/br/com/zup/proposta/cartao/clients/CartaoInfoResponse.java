@@ -13,9 +13,4 @@ public class CartaoInfoResponse {
     public String getId() {
         return id;
     }
-
-    public String getIdOfuscado() {
-        int qtdOfuscamento = id.length() - 4;
-        return "*".repeat(qtdOfuscamento) + id.substring(qtdOfuscamento);
-    }
 }

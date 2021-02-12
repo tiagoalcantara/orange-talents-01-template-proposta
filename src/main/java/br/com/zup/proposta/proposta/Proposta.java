@@ -69,6 +69,26 @@ public class Proposta {
         return nome;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public BigDecimal getSalario() {
+        return salario;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public Cartao getCartao() {
+        return cartao;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
     public void atualizarStatus(Status resultadoSolicitacao) {
         this.status = resultadoSolicitacao;
     }
