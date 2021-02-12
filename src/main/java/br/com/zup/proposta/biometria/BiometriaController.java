@@ -36,12 +36,13 @@ public class BiometriaController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado");
         });
 
-        if(!request.validarBase64()) {
+        Biometria biometria = request.toBiometria();
+        if(!biometria.validar()) {
             logger.error("A entrada é uma Base64 inválida");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O campo digital deve estar em Base64");
         }
 
-        Biometria biometria = request.toBiometria();
+
         cartao.adicionarBiometria(biometria);
         logger.info("Biometria cadastrada para o cartão {}", id);
 

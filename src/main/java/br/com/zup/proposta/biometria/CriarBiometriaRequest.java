@@ -17,13 +17,4 @@ public class CriarBiometriaRequest {
     public Biometria toBiometria() {
         return new Biometria(digital);
     }
-
-    public boolean validarBase64() {
-        try {
-            Base64.getDecoder().decode(this.digital.getBytes());
-            return true;
-        } catch (IllegalArgumentException exception) {
-            return false;
-        }
-    }
 }
