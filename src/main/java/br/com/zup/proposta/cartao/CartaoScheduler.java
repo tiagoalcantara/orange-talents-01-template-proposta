@@ -38,6 +38,7 @@ public class CartaoScheduler {
                 CartaoInfoResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
 
                 proposta.associarCartao(cartaoInfo.getId());
+                proposta.atualizarStatus(Status.CRIADO);
                 propostaRepository.save(proposta);
                 logger.info("Cartao {} associado à proposta {}", Ofuscador.ofuscar(cartaoInfo.getId(), 4),
                             proposta.getId());

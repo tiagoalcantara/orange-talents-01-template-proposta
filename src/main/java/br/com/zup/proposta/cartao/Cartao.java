@@ -2,6 +2,7 @@ package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.biometria.Biometria;
 import br.com.zup.proposta.proposta.Proposta;
+import br.com.zup.proposta.proposta.Status;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Set;
 public class Cartao {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.MERGE)
     private Proposta proposta;
     @NotNull
     private String numero;
@@ -38,6 +39,7 @@ public class Cartao {
     public void bloquear(Bloqueio bloqueio) {
         Assert.state(!this.estaBloqueado(), "Não podemos bloquear um cartão já bloqueado");
         this.bloqueio = bloqueio;
+        this.proposta.atualizarStatus(Status.BLOQUEADO);
     };
 
     public String getNumero() {
