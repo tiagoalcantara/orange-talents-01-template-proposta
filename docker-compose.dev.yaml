@@ -22,19 +22,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
-  proposta:
-    image: "tiagoalcantara/proposta"
-    ports:
-      - 8080:8080
-    depends_on:
-      - "postgres"
-      - "analise"
-      - "contas"
-    environment:
-      DATABASE_URL: "jdbc:postgresql://postgres:5432/nosso-cartao"
-      SOLICITACAO_ANALISE_URL: "http://analise:9999"
-      API_CARTAO_URL: "http://contas:8888"
-
   postgres:
     image: 'postgres:alpine'
     volumes:
