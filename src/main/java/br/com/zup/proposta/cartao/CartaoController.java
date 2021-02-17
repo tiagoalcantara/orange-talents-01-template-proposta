@@ -1,54 +1,50 @@
 package br.com.zup.proposta.cartao;
 
-import br.com.zup.proposta.cartao.clients.CartaoClient;
-import br.com.zup.proposta.cartao.clients.CartaoInfoResponse;
-import br.com.zup.proposta.cartao.clients.CriarCartaoRequest;
-import br.com.zup.proposta.compartilhado.utils.Ofuscador;
-import br.com.zup.proposta.proposta.Proposta;
-import br.com.zup.proposta.proposta.PropostaRepository;
-import br.com.zup.proposta.proposta.Status;
-import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 @RestController
 @RequestMapping("/cartao")
 public class CartaoController {
 
-    private final PropostaRepository propostaRepository;
-    private final CartaoClient cartaoClient;
+    private final CartaoRepository cartaoRepository;
     private static final Logger logger = LoggerFactory.getLogger(CartaoController.class);
 
-    public CartaoController(PropostaRepository propostaRepository,
-                            CartaoClient cartaoClient) {
-        this.propostaRepository = propostaRepository;
-        this.cartaoClient = cartaoClient;
+    public CartaoController(CartaoRepository cartaoRepository) {
+        this.cartaoRepository = cartaoRepository;
     }
 
-    @GetMapping("/associar-propostas")
-    @Scheduled(fixedDelayString = "${cartao-associar-propostas.delay}")
-    public void associar() {
-        List<Proposta> propostas = propostaRepository.buscarSemCartaoAssociado(Status.ELEGIVEL);
-        logger.info("Associando {} propostas", propostas.size());
+    @PatchMapping("/{id}/bloquear")
+    @Transactional
+    public ResponseEntity<?> bloquear(@PathVariable Long id, HttpServletRequest request) {
 
-        for (Proposta proposta : propostas) {
-            try {
-                cartaoClient.criar(new CriarCartaoRequest(proposta));
-                CartaoInfoResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
+        Cartao cartao = cartaoRepository.findById(id).orElseThrow(() -> {
+            logger.info("Busca pelo cartão {} falhou.", id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado");
+        });
 
-                proposta.associarCartao(cartaoInfo.getId());
-                propostaRepository.save(proposta);
-                logger.info("Cartao {} associado à proposta {}", Ofuscador.ofuscar(cartaoInfo.getId(), 4),
-                            proposta.getId());
-            } catch (FeignException.FeignClientException e) {
-                logger.error(e.getLocalizedMessage());
-            }
+        if(cartao.estaBloqueado()){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão já está bloqueado");
         }
+
+        String userAgent = request.getHeader("User-Agent");
+        String ip = request.getRemoteAddr();
+
+        logger.info("Pedido de bloqueio para o cartão {}, vindo de {} - {}", id, ip, userAgent);
+
+        Bloqueio bloqueio = new Bloqueio(cartao, ip, userAgent);
+        cartao.bloquear(bloqueio);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,7 +2,7 @@ package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.biometria.Biometria;
 import br.com.zup.proposta.proposta.Proposta;
-import org.hibernate.validator.constraints.CreditCardNumber;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,6 +19,8 @@ public class Cartao {
     private String numero;
     @ElementCollection
     private Set<Biometria> biometrias = new HashSet<>();
+    @OneToOne(mappedBy = "cartao", cascade = CascadeType.PERSIST)
+    private Bloqueio bloqueio;
 
     @Deprecated
     public Cartao() {}
@@ -28,6 +30,15 @@ public class Cartao {
         this.proposta = proposta;
         this.numero = numero;
     }
+
+    public boolean estaBloqueado(){
+        return this.bloqueio != null;
+    }
+
+    public void bloquear(Bloqueio bloqueio) {
+        Assert.state(!this.estaBloqueado(), "Não podemos bloquear um cartão já bloqueado");
+        this.bloqueio = bloqueio;
+    };
 
     public String getNumero() {
         return numero;
