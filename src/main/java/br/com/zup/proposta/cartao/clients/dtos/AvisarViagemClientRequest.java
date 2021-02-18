@@ -1,10 +1,10 @@
 package br.com.zup.proposta.cartao.clients.dtos;
 
-public class AvisarViagemRequest {
+public class AvisarViagemClientRequest {
     private String destino;
     private String validoAte;
 
-    public AvisarViagemRequest(String destino, String validoAte) {
+    public AvisarViagemClientRequest(String destino, String validoAte) {
         this.destino = destino;
         this.validoAte = validoAte;
     }

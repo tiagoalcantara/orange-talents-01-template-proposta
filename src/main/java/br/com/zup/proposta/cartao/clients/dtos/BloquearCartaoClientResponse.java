@@ -2,11 +2,11 @@ package br.com.zup.proposta.cartao.clients.dtos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class BloquearCartaoResponse {
+public class BloquearCartaoClientResponse {
     private String resultado;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public BloquearCartaoResponse(String resultado) {
+    public BloquearCartaoClientResponse(String resultado) {
         this.resultado = resultado;
     }
 

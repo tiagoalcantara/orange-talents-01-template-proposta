@@ -1,8 +1,8 @@
 package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.cartao.clients.CartaoClient;
-import br.com.zup.proposta.cartao.clients.dtos.CartaoInfoResponse;
-import br.com.zup.proposta.cartao.clients.dtos.CriarCartaoRequest;
+import br.com.zup.proposta.cartao.clients.dtos.CartaoInfoClientResponse;
+import br.com.zup.proposta.cartao.clients.dtos.CriarCartaoClientRequest;
 import br.com.zup.proposta.compartilhado.utils.Ofuscador;
 import br.com.zup.proposta.proposta.Proposta;
 import br.com.zup.proposta.proposta.PropostaRepository;
@@ -34,8 +34,8 @@ public class CartaoScheduler {
 
         for (Proposta proposta : propostas) {
             try {
-                cartaoClient.criar(new CriarCartaoRequest(proposta));
-                CartaoInfoResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
+                cartaoClient.criar(new CriarCartaoClientRequest(proposta));
+                CartaoInfoClientResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
 
                 proposta.associarCartao(cartaoInfo.getId());
                 proposta.atualizarStatus(Status.CRIADO);

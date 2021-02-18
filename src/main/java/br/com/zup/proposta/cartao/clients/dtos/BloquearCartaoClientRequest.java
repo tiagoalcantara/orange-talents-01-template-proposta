@@ -2,11 +2,11 @@ package br.com.zup.proposta.cartao.clients.dtos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class BloquearCartaoRequest {
+public class BloquearCartaoClientRequest {
     private String sistemaResponsavel;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public BloquearCartaoRequest(String sistemaResponsavel) {
+    public BloquearCartaoClientRequest(String sistemaResponsavel) {
         this.sistemaResponsavel = sistemaResponsavel;
     }
 

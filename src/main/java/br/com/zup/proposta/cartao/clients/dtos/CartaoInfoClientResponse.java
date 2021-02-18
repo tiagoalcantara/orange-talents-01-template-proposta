@@ -2,11 +2,11 @@ package br.com.zup.proposta.cartao.clients.dtos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class CartaoInfoResponse {
+public class CartaoInfoClientResponse {
     private String id;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public CartaoInfoResponse(String id) {
+    public CartaoInfoClientResponse(String id) {
         this.id = id;
     }
 

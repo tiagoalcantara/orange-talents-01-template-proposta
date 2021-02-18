@@ -2,6 +2,8 @@ package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.biometria.Biometria;
 import br.com.zup.proposta.cartao.bloqueio.Bloqueio;
+import br.com.zup.proposta.cartao.carteira.Carteira;
+import br.com.zup.proposta.cartao.carteira.TipoCarteira;
 import br.com.zup.proposta.cartao.viagem.AvisoDeViagem;
 import br.com.zup.proposta.proposta.Proposta;
 import br.com.zup.proposta.proposta.Status;
@@ -26,8 +28,10 @@ public class Cartao {
     private Set<Biometria> biometrias = new HashSet<>();
     @OneToOne(mappedBy = "cartao", cascade = CascadeType.PERSIST)
     private Bloqueio bloqueio;
-    @OneToMany(mappedBy = "cartao", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cartao", cascade = CascadeType.MERGE)
     private List<AvisoDeViagem> avisosDeViagens = new ArrayList<>();
+    @OneToMany(mappedBy = "cartao", cascade = CascadeType.MERGE)
+    private Set<Carteira> carteiras = new HashSet<>();
 
     @Deprecated
     public Cartao() {}
@@ -58,5 +62,13 @@ public class Cartao {
 
     public void adicionarBiometria(Biometria biometria) {
         this.biometrias.add(biometria);
+    }
+
+    public void associarCarteira(Carteira carteira) {
+        carteiras.add(carteira);
+    }
+
+    public boolean temCarteira(Carteira carteira) {
+        return carteiras.contains(carteira);
     }
 }

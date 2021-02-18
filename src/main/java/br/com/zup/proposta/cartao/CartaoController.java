@@ -1,9 +1,9 @@
 package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.cartao.bloqueio.Bloqueio;
-import br.com.zup.proposta.cartao.clients.dtos.AvisarViagemRequest;
-import br.com.zup.proposta.cartao.clients.dtos.BloquearCartaoRequest;
 import br.com.zup.proposta.cartao.clients.CartaoClient;
+import br.com.zup.proposta.cartao.clients.dtos.AvisarViagemClientRequest;
+import br.com.zup.proposta.cartao.clients.dtos.BloquearCartaoClientRequest;
 import br.com.zup.proposta.cartao.viagem.AvisoDeViagem;
 import br.com.zup.proposta.cartao.viagem.AvisoDeViagemRequest;
 import br.com.zup.proposta.compartilhado.auditoria.OrigemDaRequisicao;
@@ -11,7 +11,6 @@ import br.com.zup.proposta.compartilhado.utils.Ofuscador;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 
 @RestController
@@ -52,7 +50,7 @@ public class CartaoController {
         }
 
         try {
-            cartaoClient.bloquear(cartao.getNumero(), new BloquearCartaoRequest(
+            cartaoClient.bloquear(cartao.getNumero(), new BloquearCartaoClientRequest(
                     "propostas"));
             OrigemDaRequisicao origemDaRequisicao = OrigemDaRequisicao.pegarDadosDeOrigemDaRequest(request);
             Bloqueio bloqueio = new Bloqueio(cartao, origemDaRequisicao);
@@ -71,7 +69,7 @@ public class CartaoController {
                              .build();
     }
 
-    @PatchMapping("/{id}/viagem")
+    @PostMapping("/{id}/viagem")
     public ResponseEntity<?> avisoDeViagem(@PathVariable Long id,
                                            @RequestBody @Valid AvisoDeViagemRequest avisoDeViagemRequest,
                                            HttpServletRequest request) {
@@ -86,11 +84,8 @@ public class CartaoController {
         AvisoDeViagem avisoDeViagem = avisoDeViagemRequest.toViagem(origemDaRequisicao, cartao);
 
         try {
-            cartaoClient.avisar(cartao.getNumero(), new AvisarViagemRequest(avisoDeViagemRequest.getDestino(),
-                                                                            avisoDeViagemRequest.getDataFinal()
-                                                                                                .format(
-                                                                                                        DateTimeFormatter.ofPattern(
-                                                                                                                "yyyy-MM-dd"))));
+            cartaoClient.avisar(cartao.getNumero(), new AvisarViagemClientRequest(avisoDeViagemRequest.getDestino(),
+                                                                                  avisoDeViagemRequest.getDataFinal().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
             cartao.avisarViagem(avisoDeViagem);
             cartaoRepository.save(cartao);
 
@@ -102,7 +97,7 @@ public class CartaoController {
         }
 
 
-        return ResponseEntity.ok()
-                             .build();
+        return ResponseEntity.ok().build();
     }
+
 }
