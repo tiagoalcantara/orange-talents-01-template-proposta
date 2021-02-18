@@ -21,7 +21,9 @@ public class AcompanharPropostaResponse {
         this.nome = proposta.getNome();
         this.salario = proposta.getSalario();
         this.endereco = new DetalharEnderecoResponse(proposta.getEndereco());
-        this.cartao = proposta.getCartao().getNumero();
+        if(proposta.getCartao() != null){
+            this.cartao = proposta.getCartao().getNumero();
+        }
     }
 
     public Status getStatus() {

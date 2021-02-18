@@ -1,5 +1,6 @@
 package br.com.zup.proposta.cartao.clients;
 
+import br.com.zup.proposta.cartao.clients.dtos.AvisarViagemRequest;
 import br.com.zup.proposta.cartao.clients.dtos.BloquearCartaoRequest;
 import br.com.zup.proposta.cartao.clients.dtos.CartaoInfoResponse;
 import br.com.zup.proposta.cartao.clients.dtos.CriarCartaoRequest;
@@ -16,4 +17,7 @@ public interface CartaoClient {
 
     @PostMapping("/api/cartoes/{id}/bloqueios")
     void bloquear(@PathVariable String id, @RequestBody BloquearCartaoRequest request);
+
+    @PostMapping("/api/cartoes/{id}/avisos")
+    void avisar(@PathVariable String id, @RequestBody AvisarViagemRequest request);
 }

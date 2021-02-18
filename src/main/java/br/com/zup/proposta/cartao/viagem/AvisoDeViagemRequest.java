@@ -26,6 +26,14 @@ public class AvisoDeViagemRequest {
         this.dataFinal = dataFinal;
     }
 
+    public String getDestino() {
+        return destino;
+    }
+
+    public LocalDate getDataFinal() {
+        return dataFinal;
+    }
+
     public AvisoDeViagem toViagem(OrigemDaRequisicao origemDaRequisicao, Cartao cartao) {
         return new AvisoDeViagem(destino, dataFinal, origemDaRequisicao, cartao);
     }

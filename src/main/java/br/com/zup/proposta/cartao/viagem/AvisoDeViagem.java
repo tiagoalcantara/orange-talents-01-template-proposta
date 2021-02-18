@@ -44,4 +44,8 @@ public class AvisoDeViagem {
         this.origemDaRequisicao = origemDaRequisicao;
         this.cartao = cartao;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
