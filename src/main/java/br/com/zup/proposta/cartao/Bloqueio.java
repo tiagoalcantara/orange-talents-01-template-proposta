@@ -1,9 +1,10 @@
 package br.com.zup.proposta.cartao;
 
+import br.com.zup.proposta.compartilhado.auditoria.OrigemDaRequisicao;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -14,10 +15,9 @@ public class Bloqueio {
     @NotNull
     @OneToOne
     private Cartao cartao;
-    @NotBlank
-    private String ip;
-    @NotBlank
-    private String userAgent;
+    @Valid
+    @Embedded
+    private OrigemDaRequisicao origemDaRequisicao;
     @CreationTimestamp
     private LocalDateTime data;
 
@@ -25,10 +25,8 @@ public class Bloqueio {
     public Bloqueio() { }
 
     public Bloqueio(@NotNull Cartao cartao,
-                    @NotBlank String ip,
-                    @NotBlank String userAgent) {
+                    @Valid OrigemDaRequisicao origemDaRequisicao) {
         this.cartao = cartao;
-        this.ip = ip;
-        this.userAgent = userAgent;
+        this.origemDaRequisicao = origemDaRequisicao;
     }
 }

@@ -1,8 +1,8 @@
 package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.cartao.clients.BloquearCartaoRequest;
-import br.com.zup.proposta.cartao.clients.BloquearCartaoResponse;
 import br.com.zup.proposta.cartao.clients.CartaoClient;
+import br.com.zup.proposta.compartilhado.auditoria.OrigemDaRequisicao;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +42,15 @@ public class CartaoController {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão já está bloqueado");
         }
 
-        String userAgent = request.getHeader("User-Agent");
-        String ip = request.getRemoteAddr();
-
-        logger.info("Pedido de bloqueio para o cartão {}, vindo de {} - {}", id, ip, userAgent);
-
         try {
             cartaoClient.bloquear(cartao.getNumero(), new BloquearCartaoRequest(
                     "propostas"));
-            Bloqueio bloqueio = new Bloqueio(cartao, ip, userAgent);
+            OrigemDaRequisicao origemDaRequisicao = OrigemDaRequisicao.pegarDadosDeOrigemDaRequest(request);
+            Bloqueio bloqueio = new Bloqueio(cartao, origemDaRequisicao);
+
+            logger.info("Pedido de bloqueio para o cartão {}, vindo de {} - {}", id, origemDaRequisicao.getIp(),
+                        origemDaRequisicao.getUserAgent());
+
             cartao.bloquear(bloqueio);
             cartaoRepository.save(cartao);
         } catch (FeignException.FeignClientException e) {
@@ -61,4 +61,6 @@ public class CartaoController {
 
         return ResponseEntity.ok().build();
     }
+
+
 }
