@@ -30,6 +30,18 @@ public class AssociarCarteirasController {
 
     @PostMapping("/{id}/carteira/paypal")
     public ResponseEntity<?> associarPaypal(@PathVariable Long id, @RequestBody @Valid AssociarCarteiraRequest request){
+        associarCarteira(id, request, TipoCarteira.PAYPAL);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/carteira/samsung-pay")
+    public ResponseEntity<?> associarSamsungPay(@PathVariable Long id,
+                                             @RequestBody @Valid AssociarCarteiraRequest request){
+        associarCarteira(id, request, TipoCarteira.SAMSUNG_PAY);
+        return ResponseEntity.ok().build();
+    }
+
+    private void associarCarteira(Long id, AssociarCarteiraRequest request, TipoCarteira tipoCarteira) {
         Cartao cartao = cartaoRepository.findById(id)
                                         .orElseThrow(() -> {
                                             logger.error("Busca pelo cartão {} falhou.", id);
@@ -37,24 +49,23 @@ public class AssociarCarteirasController {
                                                                               "Cartão não encontrado");
                                         });
 
-        Carteira carteira = request.toCarteira(cartao, TipoCarteira.PAYPAL);
+        Carteira carteira = request.toCarteira(cartao, tipoCarteira);
 
         if(cartao.temCarteira(carteira)){
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão já tem uma carteira paypal");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão já tem uma carteira da " +
+                    "categoria " + tipoCarteira);
         }
 
         try {
             cartaoClient.associarCarteira(cartao.getNumero(), new AssociarCarteiraClientRequest(request.getEmail(),
-                                                                                                String.valueOf(TipoCarteira.PAYPAL)));
+                                                                                                String.valueOf(tipoCarteira)));
             cartao.associarCarteira(carteira);
             cartaoRepository.save(cartao);
-            logger.info("Carteira do tipo {} cadastrada para o cartão {}", TipoCarteira.PAYPAL,
+            logger.info("Carteira do tipo {} cadastrada para o cartão {}", tipoCarteira,
                         Ofuscador.ofuscar(cartao.getNumero(), 4));
         } catch (FeignException e) {
             logger.error("Falha na comunicação com o sistema legado de cartões na hora de cadastrar uma carteira.");
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Serviço indisponivel.");
         }
-
-        return ResponseEntity.ok().build();
     }
 }
