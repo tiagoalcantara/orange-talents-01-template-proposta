@@ -1,13 +1,17 @@
 package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.biometria.Biometria;
+import br.com.zup.proposta.cartao.bloqueio.Bloqueio;
+import br.com.zup.proposta.cartao.viagem.AvisoDeViagem;
 import br.com.zup.proposta.proposta.Proposta;
 import br.com.zup.proposta.proposta.Status;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,6 +26,8 @@ public class Cartao {
     private Set<Biometria> biometrias = new HashSet<>();
     @OneToOne(mappedBy = "cartao", cascade = CascadeType.PERSIST)
     private Bloqueio bloqueio;
+    @OneToMany(mappedBy = "cartao", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private List<AvisoDeViagem> avisosDeViagens = new ArrayList<>();
 
     @Deprecated
     public Cartao() {}
@@ -44,6 +50,10 @@ public class Cartao {
 
     public String getNumero() {
         return numero;
+    }
+
+    public void avisarViagem(AvisoDeViagem viagem){
+        this.avisosDeViagens.add(viagem);
     }
 
     public void adicionarBiometria(Biometria biometria) {

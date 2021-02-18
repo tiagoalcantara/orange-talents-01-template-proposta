@@ -1,5 +1,6 @@
 package br.com.zup.proposta.compartilhado.auditoria;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
@@ -7,8 +8,10 @@ import javax.validation.constraints.NotBlank;
 @Embeddable
 public class OrigemDaRequisicao {
     @NotBlank
+    @Column(nullable = false)
     private String ip;
     @NotBlank
+    @Column(nullable = false)
     private String userAgent;
 
     @Deprecated

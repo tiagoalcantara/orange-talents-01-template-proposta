@@ -1,8 +1,8 @@
 package br.com.zup.proposta.cartao;
 
 import br.com.zup.proposta.cartao.clients.CartaoClient;
-import br.com.zup.proposta.cartao.clients.CartaoInfoResponse;
-import br.com.zup.proposta.cartao.clients.CriarCartaoRequest;
+import br.com.zup.proposta.cartao.clients.dtos.CartaoInfoResponse;
+import br.com.zup.proposta.cartao.clients.dtos.CriarCartaoRequest;
 import br.com.zup.proposta.compartilhado.utils.Ofuscador;
 import br.com.zup.proposta.proposta.Proposta;
 import br.com.zup.proposta.proposta.PropostaRepository;

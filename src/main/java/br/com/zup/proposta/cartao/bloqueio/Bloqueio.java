@@ -1,5 +1,6 @@
-package br.com.zup.proposta.cartao;
+package br.com.zup.proposta.cartao.bloqueio;
 
+import br.com.zup.proposta.cartao.Cartao;
 import br.com.zup.proposta.compartilhado.auditoria.OrigemDaRequisicao;
 import org.hibernate.annotations.CreationTimestamp;
 

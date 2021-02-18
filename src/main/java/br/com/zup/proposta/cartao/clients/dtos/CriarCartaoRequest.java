@@ -1,4 +1,4 @@
-package br.com.zup.proposta.cartao.clients;
+package br.com.zup.proposta.cartao.clients.dtos;
 
 import br.com.zup.proposta.proposta.Proposta;
 

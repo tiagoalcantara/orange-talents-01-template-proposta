@@ -1,20 +1,21 @@
 package br.com.zup.proposta.cartao;
 
-import br.com.zup.proposta.cartao.clients.BloquearCartaoRequest;
+import br.com.zup.proposta.cartao.bloqueio.Bloqueio;
+import br.com.zup.proposta.cartao.clients.dtos.BloquearCartaoRequest;
 import br.com.zup.proposta.cartao.clients.CartaoClient;
+import br.com.zup.proposta.cartao.viagem.AvisoDeViagem;
+import br.com.zup.proposta.cartao.viagem.AvisoDeViagemRequest;
 import br.com.zup.proposta.compartilhado.auditoria.OrigemDaRequisicao;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/cartao")
@@ -34,11 +35,12 @@ public class CartaoController {
     public ResponseEntity<?> bloquear(@PathVariable Long id, HttpServletRequest request) {
 
         Cartao cartao = cartaoRepository.findById(id).orElseThrow(() -> {
-            logger.info("Busca pelo cartão {} falhou.", id);
+            logger.error("Busca pelo cartão {} falhou.", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado");
         });
 
         if(cartao.estaBloqueado()){
+            logger.error("Tentou bloquear o cartão {} mas ele já está bloqueado.", id);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "O cartão já está bloqueado");
         }
 
@@ -53,14 +55,28 @@ public class CartaoController {
 
             cartao.bloquear(bloqueio);
             cartaoRepository.save(cartao);
-        } catch (FeignException.FeignClientException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cartão com dados inválidos");
-        } catch (FeignException.FeignServerException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "O serviço está indisponível");
+        } catch (FeignException e) {
+            logger.error("Falha na comunicação com o sistema legado de cartões.");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Serviço indisponivel.");
         }
 
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/viagem")
+    public ResponseEntity<?> avisoDeViagem(@PathVariable Long id, @RequestBody @Valid AvisoDeViagemRequest avisoDeViagemRequest,
+                                           HttpServletRequest request){
+        Cartao cartao = cartaoRepository.findById(id).orElseThrow(() -> {
+            logger.error("Busca pelo cartão {} falhou.", id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cartão não encontrado");
+        });
 
+        OrigemDaRequisicao origemDaRequisicao = OrigemDaRequisicao.pegarDadosDeOrigemDaRequest(request);
+        AvisoDeViagem avisoDeViagem = avisoDeViagemRequest.toViagem(origemDaRequisicao, cartao);
+
+        cartao.avisarViagem(avisoDeViagem);
+        cartaoRepository.save(cartao);
+
+        return ResponseEntity.ok().build();
+    }
 }

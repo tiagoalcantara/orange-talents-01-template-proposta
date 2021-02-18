@@ -1,4 +1,4 @@
-package br.com.zup.proposta.cartao.clients;
+package br.com.zup.proposta.cartao.clients.dtos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
