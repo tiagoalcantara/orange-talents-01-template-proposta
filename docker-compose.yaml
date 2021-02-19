@@ -38,7 +38,10 @@ services:
   postgres:
     image: 'postgres:alpine'
     volumes:
+      - ./customPostgresql.conf:/etc/postgresql.conf
+      - ./postgresStartScript.sql:/docker-entrypoint-initdb.d/pgcrypto.sql
       - postgres-volume:/var/lib/postgresql/data
+    command: postgres -c config_file=/etc/postgresql.conf
     ports:
       - 5432:5432
     environment:

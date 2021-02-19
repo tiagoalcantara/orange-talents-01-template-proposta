@@ -1,0 +1,1 @@
+postgres -c encrypt.key = 'Wow! So much security.'

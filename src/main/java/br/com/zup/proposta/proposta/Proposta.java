@@ -2,6 +2,7 @@ package br.com.zup.proposta.proposta;
 
 import br.com.zup.proposta.cartao.Cartao;
 import br.com.zup.proposta.compartilhado.validators.CpfCnpj;
+import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
@@ -18,7 +19,9 @@ public class Proposta {
     private Long id;
     @NotBlank
     @CpfCnpj
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "bytea")
+    // TODO: Descobrir como tirar o segredo hard coded
+    @ColumnTransformer(read = "pgp_sym_decrypt(documento, 'esquilo')", write = "pgp_sym_encrypt(?, 'esquilo')")
     private String documento;
     @NotBlank
     @Email

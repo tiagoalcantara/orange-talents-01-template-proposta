@@ -27,6 +27,7 @@ public class CartaoScheduler {
         this.cartaoClient = cartaoClient;
     }
 
+    // TODO: Refatorar o método para ficar amigável pra multiplas instancias
     @Scheduled(fixedDelayString = "${cartao-associar-propostas.delay}")
     public void associar() {
         List<Proposta> propostas = propostaRepository.buscarSemCartaoAssociado(Status.ELEGIVEL);
