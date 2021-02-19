@@ -44,6 +44,7 @@ public class PropostaController {
         propostaRepository.save(proposta);
 
         Status statusAvaliado = analisaStatusService.executa(new AnalisaStatusRequest(proposta));
+
         proposta.atualizarStatus(statusAvaliado);
         propostaRepository.save(proposta);
 

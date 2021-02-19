@@ -40,7 +40,7 @@ public class Proposta {
     private Cartao cartao;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.NAO_AVALIADO;
 
     @Deprecated
     public Proposta() { }

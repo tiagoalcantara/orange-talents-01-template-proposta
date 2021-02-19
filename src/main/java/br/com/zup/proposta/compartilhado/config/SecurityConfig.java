@@ -24,16 +24,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests(authorizeRequests -> {
             authorizeRequests
+                    .antMatchers(HttpMethod.GET, "/actuator/prometheus").permitAll()
                     .antMatchers(HttpMethod.GET, "/actuator/**").hasAuthority("SCOPE_actuator:read")
                     .antMatchers(HttpMethod.GET, "/proposta/**").hasAuthority("SCOPE_proposta:read")
                     .antMatchers(HttpMethod.POST, "/proposta/**").hasAuthority("SCOPE_proposta:write")
                     .antMatchers(HttpMethod.GET, "/cartao/**").hasAuthority("SCOPE_cartao:read")
-                    .antMatchers(HttpMethod.POST, "/cartao/**").hasAuthority("SCOPE_cartao:write")
-                    .anyRequest().authenticated();
+                    .antMatchers(HttpMethod.POST, "/cartao/**").hasAuthority("SCOPE_cartao:write");
         })
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint());
+            .and().cors().disable()
+            .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint());
     }
 
     private static class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
