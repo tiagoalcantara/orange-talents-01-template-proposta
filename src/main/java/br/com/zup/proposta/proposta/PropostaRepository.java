@@ -10,6 +10,7 @@ import java.util.List;
 public interface PropostaRepository extends JpaRepository<Proposta, Long> {
     boolean existsByDocumento(String documento);
 
+    // TODO: Mudar query para usar apenas o status e fazer o lock no select
     @Query("SELECT p FROM Proposta p LEFT JOIN p.cartao c WHERE p.status = :status AND c.id is null")
     List<Proposta> buscarSemCartaoAssociado(@Param("status") Status status);
 }

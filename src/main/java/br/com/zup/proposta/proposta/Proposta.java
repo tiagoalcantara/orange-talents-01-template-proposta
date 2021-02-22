@@ -20,8 +20,12 @@ public class Proposta {
     @NotBlank
     @CpfCnpj
     @Column(nullable = false, unique = true, columnDefinition = "bytea")
-    // TODO: Descobrir como tirar o segredo hard coded
-    @ColumnTransformer(read = "pgp_sym_decrypt(documento, 'esquilo')", write = "pgp_sym_encrypt(?, 'esquilo')")
+    /*
+    * TODO: Ainda não consegui colocar as configurações via docker-compose,
+    *  por enquanto foi feito manualmente.
+    * */
+    @ColumnTransformer(read = "pgp_sym_decrypt(documento, current_setting('crypto.key'))",
+                       write = "pgp_sym_encrypt(?, current_setting('crypto.key'))")
     private String documento;
     @NotBlank
     @Email
