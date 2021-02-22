@@ -3,10 +3,10 @@ package br.com.zup.proposta.cartao;
 import br.com.zup.proposta.biometria.Biometria;
 import br.com.zup.proposta.cartao.bloqueio.Bloqueio;
 import br.com.zup.proposta.cartao.carteira.Carteira;
-import br.com.zup.proposta.cartao.carteira.TipoCarteira;
 import br.com.zup.proposta.cartao.viagem.AvisoDeViagem;
 import br.com.zup.proposta.proposta.Proposta;
 import br.com.zup.proposta.proposta.Status;
+import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
@@ -23,6 +23,7 @@ public class Cartao {
     @OneToOne(cascade = CascadeType.MERGE)
     private Proposta proposta;
     @NotNull
+    @CreditCardNumber
     private String numero;
     @ElementCollection
     private Set<Biometria> biometrias = new HashSet<>();
@@ -65,6 +66,7 @@ public class Cartao {
     }
 
     public void associarCarteira(Carteira carteira) {
+        Assert.state(!temCarteira(carteira), "Não deveria adicionar uma carteira repetida.");
         carteiras.add(carteira);
     }
 

@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 public class Proposta {
@@ -103,5 +104,22 @@ public class Proposta {
     public void associarCartao(String numero) {
         Assert.hasLength(numero, "O numero do cartão é obrigatório.");
         this.cartao = new Cartao(this, numero);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Proposta proposta = (Proposta) o;
+        return documento.equals(proposta.documento);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(documento);
     }
 }

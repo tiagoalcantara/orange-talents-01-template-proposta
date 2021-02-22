@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Bloqueio {
@@ -29,5 +30,25 @@ public class Bloqueio {
                     @Valid OrigemDaRequisicao origemDaRequisicao) {
         this.cartao = cartao;
         this.origemDaRequisicao = origemDaRequisicao;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Bloqueio bloqueio = (Bloqueio) o;
+        return Objects.equals(id, bloqueio.id) && Objects.equals(cartao,
+                                                                 bloqueio.cartao) && Objects.equals(
+                origemDaRequisicao,
+                bloqueio.origemDaRequisicao) && Objects.equals(data, bloqueio.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cartao, origemDaRequisicao, data);
     }
 }
