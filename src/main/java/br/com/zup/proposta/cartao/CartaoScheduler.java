@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -19,33 +20,46 @@ import java.util.List;
 public class CartaoScheduler {
     private final PropostaRepository propostaRepository;
     private final CartaoClient cartaoClient;
+    private final TransactionTemplate transactionManager;
+
     private static final Logger logger = LoggerFactory.getLogger(CartaoController.class);
 
     public CartaoScheduler(PropostaRepository propostaRepository,
-                           CartaoClient cartaoClient) {
+                           CartaoClient cartaoClient,
+                           TransactionTemplate transactionManager) {
         this.propostaRepository = propostaRepository;
         this.cartaoClient = cartaoClient;
+        this.transactionManager = transactionManager;
     }
 
-    // TODO: Refatorar o método para ficar amigável pra multiplas instancias
     @Scheduled(fixedDelayString = "${cartao-associar-propostas.delay}")
     public void associar() {
-        List<Proposta> propostas = propostaRepository.buscarSemCartaoAssociado(Status.ELEGIVEL);
-        logger.info("Associando {} propostas", propostas.size());
+        boolean temPropostasPendentes = true;
+        while(temPropostasPendentes){
+            temPropostasPendentes = transactionManager.execute(transactionStatus -> {
+                List<Proposta> propostasPendentes = propostaRepository.findTop3ByStatusOrderByIdAsc(Status.ELEGIVEL);
+                if(propostasPendentes.isEmpty()){
+                    return false;
+                }
 
-        for (Proposta proposta : propostas) {
-            try {
-                cartaoClient.criar(new CriarCartaoClientRequest(proposta));
-                CartaoInfoClientResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
+                logger.info("Associando {} propostas", propostasPendentes.size());
 
-                proposta.associarCartao(cartaoInfo.getId());
-                proposta.atualizarStatus(Status.CRIADO);
-                propostaRepository.save(proposta);
-                logger.info("Cartao {} associado à proposta {}", Ofuscador.ofuscar(cartaoInfo.getId(), 4),
-                            proposta.getId());
-            } catch (FeignException.FeignClientException e) {
-                logger.error(e.getLocalizedMessage());
-            }
+                propostasPendentes.forEach(proposta -> {
+                    try {
+                        cartaoClient.criar(new CriarCartaoClientRequest(proposta));
+                        CartaoInfoClientResponse cartaoInfo = cartaoClient.consultarPorProposta(proposta.getId());
+                        proposta.associarCartao(cartaoInfo.getId());
+                        proposta.atualizarStatus(Status.CRIADO);
+                        propostaRepository.save(proposta);
+                        logger.info("Cartao {} associado à proposta {}", Ofuscador.ofuscar(cartaoInfo.getId(), 4),
+                                    proposta.getId());
+                    } catch (FeignException.FeignClientException e) {
+                        logger.error(e.getLocalizedMessage());
+                    }
+                });
+
+                return true;
+            });
         }
     }
 }

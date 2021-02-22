@@ -32,8 +32,6 @@ public class PropostaController {
     public ResponseEntity<?> criar(@RequestBody @Valid NovaPropostaRequest request,
                                    UriComponentsBuilder uriComponentsBuilder) {
 
-        logger.info("Iniciando criação de proposta.");
-
         if (propostaRepository.existsByDocumento(request.getDocumento())) {
             logger.error("Já existe uma proposta com o documento " + Ofuscador.ofuscar(request.getDocumento(), 3));
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
