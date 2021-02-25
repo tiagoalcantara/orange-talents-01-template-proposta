@@ -34,14 +34,16 @@ services:
       DATABASE_URL: "jdbc:postgresql://postgres:5432/nosso-cartao"
       SOLICITACAO_ANALISE_URL: "http://analise:9999"
       API_CARTAO_URL: "http://contas:8888"
+      AMBIENTE: "homologacao"
+      NOME_DA_APLICACAO: "proposta"
+      KEYCLOAK_ISSUER_URI: "http://localhost:18080/auth/realms/nosso-cartao"
+      KEYCLOAK_JWKS_URI: "http://keycloak:8080/auth/realms/nosso-cartao/protocol/openid-connect/certs"
+      JAEGER_ENDPOINT: "http://jaeger:14268/api/traces"
 
   postgres:
     image: 'postgres:alpine'
     volumes:
-      - ./customPostgresql.conf:/etc/postgresql.conf
-      - ./postgresStartScript.sql:/docker-entrypoint-initdb.d/pgcrypto.sql
       - postgres-volume:/var/lib/postgresql/data
-    command: postgres -c config_file=/etc/postgresql.conf
     ports:
       - 5432:5432
     environment:
@@ -66,6 +68,7 @@ services:
       - contas
       - analise
       - transacoes
+      - proposta
       - postgres
     environment:
       DB_VENDOR: postgres
